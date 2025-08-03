@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block title %}Booking Details{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-lg border-0">
+            <div class="card-header bg-dark text-white">
+                <h3>Booking Details</h3>
+            </div>
+            <div class="card-body p-4">
+                {% if booking %}
+                    <p><strong>Ticket ID:</strong> {{ booking['ticketID'] }}</p>
+                    <p><strong>Name:</strong> {{ booking['name'] }}</p>
+                    <p><strong>Email:</strong> {{ booking['gmail'] }}</p>
+                    <p><strong>Status:</strong> <span class="badge bg-{{ 'success' if booking['status'] == 'confirmed' else 'warning' }}">{{ booking['status'] }}</span></p>
+                    <p><strong>Travel Date:</strong> {{ booking['travel_date'] }}</p>
+    
+                    {% if booking_type == 'flight' %}
+                    <h4 class="mt-4">Flight Details</h4>
+                    <p><strong>Destination:</strong> {{ booking['destination'] }}</p>
+                    <p><strong>Seat:</strong> {{ booking['seat'] }}</p>
+                    <p><strong>Class:</strong> {{ booking['class'] }}</p>
+                    <p><strong>Fare:</strong> ₹{{ booking['fare'] }}</p>
+                    {% elif booking_type == 'train' %}
+                    <h4 class="mt-4">Train Details</h4>
+                    <p><strong>Train Name:</strong> {{ booking['train_name'] }} ({{ booking['train_number'] }})</p>
+                    <p><strong>Destination:</strong> {{ booking['destination'] }}</p>
+                    <p><strong>Seat:</strong> {{ booking['compartment'] }}-{{ booking['seat'] }}</p>
+                    <p><strong>Fare:</strong> ₹{{ booking['fare'] }}</p>
+                    {% elif booking_type == 'combined' %}
+                    <h4 class="mt-4">Flight Details</h4>
+                    <p><strong>Destination:</strong> {{ booking['flight_destination'] }}</p>
+                    <p><strong>Seat:</strong> {{ booking['flight_seat'] }}</p>
+                    <p><strong>Fare:</strong> ₹{{ booking['flight_fare'] }}</p>
+                    <h4 class="mt-4">Train Details</h4>
+                    <p><strong>Train Name:</strong> {{ booking['train_name'] }} ({{ booking['train_number'] }})</p>
+                    <p><strong>Destination:</strong> {{ booking['train_destination'] }}</p>
+                    <p><strong>Seat:</strong> {{ booking['train_compartment'] }}-{{ booking['train_seat'] }}</p>
+                    <p><strong>Fare:</strong> ₹{{ booking['train_fare'] }}</p>
+                    {% endif %}
+    
+                    {% if booking['food_orders'] %}
+                    <h4 class="mt-4">Food Orders</h4>
+                    <ul class="list-group">
+                        {% for order in booking['food_orders'] %}
+                        <li class="list-group-item">{{ order['food_item'] }} (Quantity: {{ order['quantity'] }}) - ₹{{ order['food_cost'] }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                {% else %}
+                    <div class="alert alert-warning">Booking details could not be found.</div>
+                {% endif %}
+                 <div class="text-center mt-4">
+                    <a href="{{ url_for('check_pnr') }}" class="btn btn-secondary">Check Another PNR</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

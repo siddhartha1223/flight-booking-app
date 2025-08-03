@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}Book a Flight{% endblock %}
+{% block content %}
+<style>
+    .header-image {
+        height: 250px;
+        background: url('https://images.unsplash.com/photo-1436491865332-7a61a109cc55?q=80&w=2070&auto=format&fit=crop') no-repeat center center;
+        background-size: cover;
+    }
+</style>
+<div class="card shadow-lg border-0">
+    <div class="header-image rounded-top"></div>
+    <div class="card-body p-4 p-md-5">
+        <h2 class="card-title text-center mb-4">Book a Flight</h2>
+        <form method="POST" action="{{ url_for('book_flight') }}" class="needs-validation" novalidate>
+            <h4 class="mb-3">Personal Details</h4>
+            <div class="row g-3">
+                <div class="col-sm-6">
+                    <label for="name" class="form-label">Full Name</label>
+                    <input type="text" class="form-control" id="name" name="name" required>
+                </div>
+                <div class="col-sm-6">
+                    <label for="phone" class="form-label">Phone</label>
+                    <input type="tel" class="form-control" id="phone" name="phone" required pattern="\d{10}">
+                </div>
+                <div class="col-12">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" required>
+                </div>
+            </div>
+            <hr class="my-4">
+            <h4 class="mb-3">Flight Details</h4>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="flight_destination" class="form-label">Destination</label>
+                    <select class="form-select" id="flight_destination" name="flight_destination" required>
+                        <option value="" disabled selected>Choose...</option>
+                        {% for key, value in flight_map.items() %}
+                            <option value="{{ key }}">{{ value }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="travel_date" class="form-label">Travel Date</label>
+                    <input type="date" class="form-control" id="travel_date" name="travel_date" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="flight_class" class="form-label">Class</label>
+                    <select class="form-select" id="flight_class" name="flight_class" required>
+                        <option value="Economy">Economy</option>
+                        <option value="Business">Business</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="flight_seat" class="form-label">Seat</label>
+                    <select class="form-select" id="flight_seat" name="flight_seat" required>
+                        <option value="" disabled selected>Choose a seat...</option>
+                        {% for seat in seats %}
+                            <option value="{{ seat['number'] }}" {% if seat['display_status'] != 'available' %}disabled class="text-danger"{% endif %}>
+                                {{ seat['number'] }} ({{ seat['display_status'] }})
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <hr class="my-4">
+            <h4 class="mb-3">Food Orders (Optional)</h4>
+            <div class="row">
+            {% for item, cost in food_menu.items() %}
+                <div class="col-md-6">
+                    <div class="input-group mb-3">
+                        <div class="input-group-text">
+                            <input class="form-check-input mt-0" type="checkbox" name="food_orders" value="{{ item }}">
+                        </div>
+                        <span class="input-group-text">{{ item }} (₹{{ cost }})</span>
+                        <input type="number" class="form-control" name="quantity_{{ item }}" value="1" min="1">
+                    </div>
+                </div>
+            {% endfor %}
+            </div>
+            <hr class="my-4">
+            <div class="d-flex justify-content-center my-4">
+              <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}"></div>
+            </div>
+            <div class="d-grid">
+                <button class="btn btn-primary btn-lg" type="submit">Proceed to Payment</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

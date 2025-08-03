@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}Verify Booking{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card shadow-lg border-0 text-center">
+            <img src="https://images.unsplash.com/photo-1599951694569-8e7c61a09536?q=80&w=2070&auto=format&fit=crop" class="card-img-top" alt="Security lock" style="height: 200px; object-fit: cover;">
+            <div class="card-body p-5">
+                <h2 class="card-title">Verify Your Booking</h2>
+                <p class="card-text text-muted mb-4">Enter the OTP sent to your email for Ticket ID: <br><strong class="text-dark">{{ ticket_id }}</strong></p>
+                
+                <form action="{{ url_for('verify_booking', ticket_id=ticket_id) }}" method="POST">
+                    <div class="mb-3">
+                        <label for="otp" class="form-label visually-hidden">Enter OTP</label>
+                        <input type="text" id="otp" name="otp" class="form-control form-control-lg text-center" required autofocus pattern="\d{6}" title="Please enter the 6-digit OTP." placeholder="******">
+                    </div>
+                    <div class="d-flex justify-content-center mb-3">
+                        <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}"></div>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">Verify & Confirm Booking</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

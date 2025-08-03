@@ -1,0 +1,10 @@
+# Environment variables - VERY IMPORTANT
+.env
+
+# Python cache files
+__pycache__/
+*.pyc
+
+# IDE configuration folders
+.vscode/
+.idea/

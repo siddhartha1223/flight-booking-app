@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Confirm Payment{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-lg border-0">
+            <div class="card-header text-center bg-primary text-white">
+                <h2 class="my-2">Confirm Your Booking</h2>
+            </div>
+            <div class="card-body p-5">
+                {% if booking %}
+                    <p class="lead">Please review your booking details before confirming payment.</p>
+                    <div class="list-group mb-4">
+                        <div class="list-group-item"><strong>Ticket ID:</strong> <span class="float-end">{{ booking['ticket_id'] }}</span></div>
+                        <div class="list-group-item"><strong>Name:</strong> <span class="float-end">{{ booking['name'] }}</span></div>
+                        <div class="list-group-item"><strong>Email:</strong> <span class="float-end">{{ booking['email'] }}</span></div>
+                        <div class="list-group-item"><strong>Travel Date:</strong> <span class="float-end">{{ booking['travel_date'] }}</span></div>
+                    </div>
+                    
+                    {% if booking['type'] == 'flight' or booking['type'] == 'combined' %}
+                    <h4 class="mt-4">Flight Details</h4>
+                    <div class="list-group mb-4">
+                        <div class="list-group-item"><strong>Destination:</strong> <span class="float-end">{{ booking['destination'] or booking['flight_destination'] }}</span></div>
+                        <div class="list-group-item"><strong>Seat:</strong> <span class="float-end">{{ booking['seat'] or booking['flight_seat'] }}</span></div>
+                        <div class="list-group-item"><strong>Fare:</strong> <span class="float-end">₹{{ booking['fare'] or booking['flight_fare'] }}</span></div>
+                    </div>
+                    {% endif %}
+
+                    {% if booking['type'] == 'train' or booking['type'] == 'combined' %}
+                    <h4 class="mt-4">Train Details</h4>
+                    <div class="list-group mb-4">
+                        <div class="list-group-item"><strong>Train:</strong> <span class="float-end">{{ booking['train_name'] }} ({{ booking['train_number'] }})</span></div>
+                        <div class="list-group-item"><strong>Seat:</strong> <span class="float-end">{{ booking['compartment'] or booking['train_compartment'] }}-{{ booking['seat'] or booking['train_seat'] }}</span></div>
+                        <div class="list-group-item"><strong>Fare:</strong> <span class="float-end">₹{{ booking['fare'] or booking['train_fare'] }}</span></div>
+                    </div>
+                    {% endif %}
+
+                    <div class="list-group mt-4">
+                        <div class="list-group-item list-group-item-success fs-5">
+                            <strong>Total Fare: <span class="float-end">₹
+                            {% if booking['type'] == 'flight' %}{{ booking['fare'] + booking['food_cost'] }}
+                            {% elif booking['type'] == 'train' %}{{ booking['fare'] + booking['food_cost'] }}
+                            {% else %}{{ booking['flight_fare'] + booking['train_fare'] + booking['food_cost'] }}{% endif %}
+                            </span></strong>
+                        </div>
+                    </div>
+
+                    <form method="POST" action="{{ url_for('payment_success') }}" class="mt-4 d-grid">
+                        <button type="submit" class="btn btn-lg btn-success">Confirm and Pay</button>
+                    </form>
+                {% else %}
+                    <div class="alert alert-danger">No booking details found. Please try again.</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

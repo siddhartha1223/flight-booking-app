@@ -1,0 +1,50 @@
+/* static/styles.css */
+body {
+    margin: 0;
+    min-height: 100vh;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+/* Background classes */
+.default-bg {
+    background-image: url('/static/images/default-bg.jpg');
+    background: linear-gradient(to right, #4a5568, #718096); /* Fallback */
+}
+
+.flight-bg {
+    background-image: url('/static/images/flight-bg.jpg');
+    background: linear-gradient(to right, #1e3c72, #2a5298); /* Fallback */
+}
+
+.train-bg {
+    background-image: url('/static/images/train-bg.jpg');
+    background: linear-gradient(to right, #2c7744, #38a169); /* Fallback */
+}
+
+.combined-bg {
+    background-image: url('/static/images/combined-bg.jpg');
+    background: linear-gradient(to right, #702459, #97266d); /* Fallback */
+}
+
+/* Override Tailwind for specific elements */
+nav {
+    backdrop-filter: blur(10px);
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+.form-container {
+    background-color: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.5s ease-out;
+}

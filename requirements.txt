@@ -1,0 +1,9 @@
+Flask
+Flask-Login
+Flask-Session
+mysql-connector-python
+bcrypt
+python-dotenv
+requests
+gunicorn
+weasyprint

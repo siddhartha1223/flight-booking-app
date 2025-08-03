@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block title %}Admin Panel{% endblock %}
+{% block content %}
+<div class="card shadow-sm">
+    <div class="card-body p-4">
+        <h2 class="card-title text-center mb-4">Admin Panel - All Bookings</h2>
+
+        <!-- Flight Bookings -->
+        <h3 class="mt-4 border-bottom pb-2 mb-3">Flight Bookings</h3>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>Ticket ID</th>
+                        <th>Name</th>
+                        <th>Status</th>
+                        <th>Travel Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in flight_bookings %}
+                    <tr>
+                        <td>{{ booking['ticketID'] }}</td>
+                        <td>{{ booking['name'] }}</td>
+                        <td><span class="badge bg-{{ 'success' if booking['status'] == 'confirmed' else ('warning' if booking['status'] == 'pending' else 'danger') }}">{{ booking['status'] }}</span></td>
+                        <td>{{ booking['travel_date'].strftime('%d %b %Y') }}</td>
+                        <td>
+                            <a href="{{ url_for('edit_booking', ticket_id=booking['ticketID']) }}" class="btn btn-sm btn-outline-primary me-1">Edit</a>
+                            {% if booking['status'] != 'cancelled' %}
+                            <form action="{{ url_for('cancel_booking', ticket_id=booking['ticketID']) }}" method="POST" class="d-inline" onsubmit="return confirm('Cancel this booking?');">
+                                <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
+                            </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Train Bookings -->
+        <h3 class="mt-5 border-bottom pb-2 mb-3">Train Bookings</h3>
+        <div class="table-responsive">
+             <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>Ticket ID</th>
+                        <th>Name</th>
+                        <th>Status</th>
+                        <th>Travel Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in train_bookings %}
+                    <tr>
+                        <td>{{ booking['ticketID'] }}</td>
+                        <td>{{ booking['name'] }}</td>
+                        <td><span class="badge bg-{{ 'success' if booking['status'] == 'confirmed' else ('warning' if booking['status'] == 'pending' else 'danger') }}">{{ booking['status'] }}</span></td>
+                        <td>{{ booking['travel_date'].strftime('%d %b %Y') }}</td>
+                        <td>
+                            <a href="{{ url_for('edit_booking', ticket_id=booking['ticketID']) }}" class="btn btn-sm btn-outline-primary me-1">Edit</a>
+                            {% if booking['status'] != 'cancelled' %}
+                            <form action="{{ url_for('cancel_booking', ticket_id=booking['ticketID']) }}" method="POST" class="d-inline" onsubmit="return confirm('Cancel this booking?');">
+                                <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
+                            </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Combined Bookings -->
+         <h3 class="mt-5 border-bottom pb-2 mb-3">Combined Bookings</h3>
+        <div class="table-responsive">
+             <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>Ticket ID</th>
+                        <th>Name</th>
+                        <th>Status</th>
+                        <th>Travel Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in combined_bookings %}
+                    <tr>
+                        <td>{{ booking['ticketID'] }}</td>
+                        <td>{{ booking['name'] }}</td>
+                        <td><span class="badge bg-{{ 'success' if booking['status'] == 'confirmed' else ('warning' if booking['status'] == 'pending' else 'danger') }}">{{ booking['status'] }}</span></td>
+                        <td>{{ booking['travel_date'].strftime('%d %b %Y') }}</td>
+                        <td>
+                            <a href="{{ url_for('edit_booking', ticket_id=booking['ticketID']) }}" class="btn btn-sm btn-outline-primary me-1">Edit</a>
+                            {% if booking['status'] != 'cancelled' %}
+                            <form action="{{ url_for('cancel_booking', ticket_id=booking['ticketID']) }}" method="POST" class="d-inline" onsubmit="return confirm('Cancel this booking?');">
+                                <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
+                            </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

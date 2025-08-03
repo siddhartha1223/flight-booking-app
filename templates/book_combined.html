@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% block title %}Book Combined Trip{% endblock %}
+{% block content %}
+<style>
+    .header-image {
+        height: 250px;
+        background: url('https://images.unsplash.com/photo-1534067783941-51c9c23ecefd?q=80&w=1887&auto=format&fit=crop') no-repeat center center;
+        background-size: cover;
+    }
+</style>
+<div class="card shadow-lg border-0">
+    <div class="header-image rounded-top"></div>
+    <div class="card-body p-4 p-md-5">
+        <h2 class="card-title text-center mb-4">Book Flight + Train</h2>
+        <form action="{{ url_for('book_combined') }}" method="POST">
+            
+            <h4 class="mb-3">Personal Details</h4>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="name" class="form-label">Full Name</label>
+                    <input type="text" id="name" name="name" class="form-control" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="phone" class="form-label">10-Digit Phone Number</label>
+                    <input type="tel" id="phone" name="phone" class="form-control" required pattern="\d{10}">
+                </div>
+                <div class="col-12">
+                    <label for="email" class="form-label">Email Address</label>
+                    <input type="email" id="email" name="email" class="form-control" required>
+                </div>
+            </div>
+
+            <hr class="my-4">
+            <h4 class="mb-3">Flight Details</h4>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="travel_date" class="form-label">Travel Date</label>
+                    <input type="date" id="travel_date" name="travel_date" class="form-control" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="flight_destination" class="form-label">Flight Destination</label>
+                    <select id="flight_destination" name="flight_destination" class="form-select" required>
+                        <option value="" disabled selected>-- Select --</option>
+                        {% for key, destination in flight_map.items() %}
+                            <option value="{{ key }}">{{ destination }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="flight_class" class="form-label">Class</label>
+                    <select id="flight_class" name="flight_class" class="form-select" required>
+                        <option value="Economy">Economy</option>
+                        <option value="Business">Business</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="flight_seat" class="form-label">Flight Seat</label>
+                    <select id="flight_seat" name="flight_seat" class="form-select" required>
+                        <option value="" disabled selected>-- Select --</option>
+                        {% for seat in flight_seats %}
+                            <option value="{{ seat['number'] }}" {% if seat['display_status'] != 'available' %}disabled{% endif %}>
+                                {{ seat['number'] }} ({{ seat['display_status'] }})
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <hr class="my-4">
+            <h4 class="mb-3">Connecting Train Details</h4>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="train" class="form-label">Select Train</label>
+                    <select id="train" name="train" class="form-select" required>
+                        <option value="" disabled selected>-- First select a flight destination --</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="train_compartment" class="form-label">Compartment</label>
+                    <select id="train_compartment" name="train_compartment" class="form-select" required>
+                        <option value="S1">S1</option>
+                        <option value="S2">S2</option>
+                        <option value="S3">S3</option>
+                    </select>
+                </div>
+                <div class="col-12">
+                    <label for="train_seat" class="form-label">Train Seat</label>
+                    <select id="train_seat" name="train_seat" class="form-select" required>
+                        <option value="" disabled selected>-- Select --</option>
+                        {% for seat in train_seats %}
+                            <option value="{{ seat['number'].split('-')[1] }}" {% if seat['display_status'] != 'available' %}disabled{% endif %}>
+                                {{ seat['number'] }} ({{ seat['display_status'] }})
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            
+            <hr class="my-4">
+            <div class="d-flex justify-content-center my-4">
+                <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}"></div>
+            </div>
+            <div class="d-grid">
+                <button type="submit" class="btn btn-info btn-lg">Proceed to Payment</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+    document.getElementById('flight_destination').addEventListener('change', function() {
+        let trainSelect = document.getElementById('train');
+        trainSelect.innerHTML = '<option value="" disabled selected>Loading trains...</option>';
+        fetch("{{ url_for('get_train_options') }}", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ flight_destination: this.value })
+        })
+        .then(response => response.json())
+        .then(data => {
+            trainSelect.innerHTML = '<option value="" disabled selected>-- Select a Train --</option>';
+            if (Object.keys(data).length === 0) {
+                trainSelect.innerHTML = '<option value="" disabled selected>No trains from this city</option>';
+            }
+            for (let key in data) {
+                let option = document.createElement('option');
+                option.value = key;
+                option.text = `${data[key][0]} (${data[key][1]}) to ${data[key][2]}`;
+                trainSelect.appendChild(option);
+            }
+        })
+        .catch(error => {
+            console.error("Error fetching train options:", error);
+            trainSelect.innerHTML = '<option value="" disabled selected>Error loading trains</option>';
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% block title %}Book Train{% endblock %}
+{% block content %}
+<style>
+    .header-image {
+        height: 250px;
+        background: url('https://images.unsplash.com/photo-1590132331322-262f0535457f?q=80&w=1925&auto=format&fit=crop') no-repeat center center;
+        background-size: cover;
+    }
+</style>
+<div class="card shadow-lg border-0">
+    <div class="header-image rounded-top"></div>
+    <div class="card-body p-4 p-md-5">
+        <h2 class="card-title text-center mb-4">Book Your Train Journey</h2>
+        <form action="{{ url_for('book_train') }}" method="POST">
+            
+            <h4 class="mb-3">Personal Details</h4>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="name" class="form-label">Full Name</label>
+                    <input type="text" id="name" name="name" placeholder="e.g., John Doe" class="form-control" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="phone" class="form-label">10-Digit Phone Number</label>
+                    <input type="tel" id="phone" name="phone" placeholder="e.g., 9876543210" class="form-control" required pattern="\d{10}">
+                </div>
+                <div class="col-12">
+                    <label for="email" class="form-label">Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="e.g., you@example.com" class="form-control" required>
+                </div>
+            </div>
+
+            <hr class="my-4">
+            <h4 class="mb-3">Train Details</h4>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="travel_date" class="form-label">Travel Date</label>
+                    <input type="date" id="travel_date" name="travel_date" class="form-control" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="train" class="form-label">Select Train</label>
+                    <select id="train" name="train" class="form-select" required>
+                        <option value="" disabled selected>-- Select a Train --</option>
+                        {% for dest, trains in train_options.items() %}
+                            <optgroup label="From {{ dest }}">
+                                {% for key, value in trains.items() %}
+                                    <option value="{{ key }}">{{ value[0] }} ({{ value[1] }}) to {{ value[2] }}</option>
+                                {% endfor %}
+                            </optgroup>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="train_compartment" class="form-label">Compartment</label>
+                    <select id="train_compartment" name="train_compartment" class="form-select" required>
+                        <option value="S1">S1</option>
+                        <option value="S2">S2</option>
+                        <option value="S3">S3</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="train_seat" class="form-label">Seat</label>
+                    <select id="train_seat" name="train_seat" class="form-select" required>
+                        <option value="" disabled selected>-- Select a Seat --</option>
+                        {% for seat in seats %}
+                            <option value="{{ seat['number'].split('-')[1] }}" {% if seat['display_status'] != 'available' %}disabled{% endif %}>
+                                {{ seat['number'] }} ({{ seat['display_status'] }})
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            
+            <hr class="my-4">
+            <div class="d-flex justify-content-center my-4">
+              <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}"></div>
+            </div>
+            <div class="d-grid">
+                <button type="submit" class="btn btn-success btn-lg">Proceed to Payment</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

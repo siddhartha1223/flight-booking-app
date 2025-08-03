@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block title %}Booking History{% endblock %}
+{% block content %}
+<h1 class="text-center mb-4">Booking History</h1>
+{% if not flight_bookings and not train_bookings and not combined_bookings %}
+    <div class="alert alert-info text-center">You have no booking history.</div>
+{% else %}
+    <div class="accordion shadow-lg" id="bookingHistoryAccordion">
+        
+        {% if flight_bookings %}
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingFlights">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFlights" aria-expanded="true" aria-controls="collapseFlights">
+                    Flight Bookings ({{ flight_bookings|length }})
+                </button>
+            </h2>
+            <div id="collapseFlights" class="accordion-collapse collapse show" aria-labelledby="headingFlights">
+                <div class="accordion-body">
+                    {% for booking in flight_bookings %}
+                        <div class="card mb-3">
+                            <div class="card-header fw-bold">Ticket ID: {{ booking['ticketID'] }}</div>
+                            <div class="card-body">
+                                <p><strong>Destination:</strong> {{ booking['destination'] }}</p>
+                                <p><strong>Seat:</strong> {{ booking['seat'] }}</p>
+                                <p><strong>Status:</strong> <span class="badge bg-{{ 'success' if booking['status'] == 'confirmed' else 'danger' }}">{{ booking['status'] }}</span></p>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if train_bookings %}
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingTrains">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTrains" aria-expanded="false" aria-controls="collapseTrains">
+                    Train Bookings ({{ train_bookings|length }})
+                </button>
+            </h2>
+            <div id="collapseTrains" class="accordion-collapse collapse" aria-labelledby="headingTrains">
+                <div class="accordion-body">
+                    {% for booking in train_bookings %}
+                        <div class="card mb-3">
+                            <div class="card-header fw-bold">Ticket ID: {{ booking['ticketID'] }}</div>
+                            <div class="card-body">
+                                <p><strong>Train:</strong> {{ booking['train_name'] }} ({{ booking['train_number'] }})</p>
+                                <p><strong>Seat:</strong> {{ booking['compartment'] }}-{{ booking['seat'] }}</p>
+                                <p><strong>Status:</strong> <span class="badge bg-{{ 'success' if booking['status'] == 'confirmed' else 'danger' }}">{{ booking['status'] }}</span></p>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if combined_bookings %}
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingCombined">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCombined" aria-expanded="false" aria-controls="collapseCombined">
+                    Combined Bookings ({{ combined_bookings|length }})
+                </button>
+            </h2>
+            <div id="collapseCombined" class="accordion-collapse collapse" aria-labelledby="headingCombined">
+                <div class="accordion-body">
+                    {% for booking in combined_bookings %}
+                        <div class="card mb-3">
+                           <div class="card-header fw-bold">Ticket ID: {{ booking['ticketID'] }}</div>
+                            <div class="card-body">
+                               <h6>Flight</h6>
+                               <p><strong>Destination:</strong> {{ booking['flight_destination'] }} | <strong>Seat:</strong> {{ booking['flight_seat'] }}</p>
+                               <hr>
+                               <h6>Train</h6>
+                               <p><strong>Train:</strong> {{ booking['train_name'] }} | <strong>Seat:</strong> {{ booking['train_compartment'] }}-{{ booking['train_seat'] }}</p>
+                                <p class="mt-3"><strong>Status:</strong> <span class="badge bg-{{ 'success' if booking['status'] == 'confirmed' else 'danger' }}">{{ booking['status'] }}</span></p>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+{% endif %}
+{% endblock %}

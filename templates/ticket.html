@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Booking Ticket - {{ booking['ticketID'] }}</title>
+    <style>
+        body { font-family: 'Helvetica', 'Arial', sans-serif; color: #333; }
+        .container { max-width: 800px; margin: 20px auto; padding: 25px; border: 1px solid #ddd; border-radius: 10px; box-shadow: 0 0 15px rgba(0,0,0,0.05); }
+        h1, h2 { color: #000; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 15px; }
+        h1 { text-align: center; }
+        .header { text-align: center; margin-bottom: 25px; }
+        .header .logo { font-size: 28px; font-weight: bold; }
+        .details-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 10px 20px; }
+        .details-grid dt { font-weight: bold; text-align: right; }
+        .details-grid dd { margin: 0; }
+        .section { margin-top: 30px; }
+        .total { font-size: 1.2em; font-weight: bold; text-align: right; margin-top: 20px; }
+        ul { padding-left: 20px; }
+        li { margin-bottom: 5px; }
+        .footer { text-align: center; margin-top: 30px; font-size: 0.9em; color: #777; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">Travel Ticket</div>
+            <p>Thank you for booking with us!</p>
+        </div>
+
+        <h1>Booking Confirmation</h1>
+
+        {% if booking_type == 'flight' %}
+            <h2>Flight Details ({{ booking['ticketID'] }})</h2>
+            <dl class="details-grid">
+                <dt>Passenger:</dt>      <dd>{{ booking['name'] }}</dd>
+                <dt>Email:</dt>           <dd>{{ booking['gmail'] }}</dd>
+                <dt>Phone:</dt>           <dd>{{ booking['phnum'] }}</dd>
+                <dt>Travel Date:</dt>     <dd>{{ booking['travel_date'] }}</dd>
+                <dt>Destination:</dt>     <dd>{{ booking['destination'] }}</dd>
+                <dt>Class:</dt>           <dd>{{ booking['class'] }}</dd>
+                <dt>Seat:</dt>            <dd>{{ booking['seat'] }}</dd>
+            </dl>
+            <div class="total">Total Fare: ₹{{ booking['fare'] }}</div>
+        
+        {% elif booking_type == 'train' %}
+            <h2>Train Details ({{ booking['ticketID'] }})</h2>
+            <dl class="details-grid">
+                <dt>Passenger:</dt>      <dd>{{ booking['name'] }}</dd>
+                <dt>Email:</dt>           <dd>{{ booking['gmail'] }}</dd>
+                <dt>Phone:</dt>           <dd>{{ booking['phnum'] }}</dd>
+                <dt>Travel Date:</dt>     <dd>{{ booking['travel_date'] }}</dd>
+                <dt>Train:</dt>           <dd>{{ booking['train_name'] }} ({{ booking['train_number'] }})</dd>
+                <dt>Destination:</dt>     <dd>{{ booking['destination'] }}</dd>
+                <dt>Compartment:</dt>     <dd>{{ booking['compartment'] }} - {{ booking['seat'] }}</dd>
+            </dl>
+            <div class="total">Total Fare: ₹{{ booking['fare'] }}</div>
+
+        {% elif booking_type == 'combined' %}
+            <h2>Combined Trip Itinerary ({{ booking['ticketID'] }})</h2>
+            <dl class="details-grid">
+                <dt>Passenger:</dt>      <dd>{{ booking['name'] }}</dd>
+                <dt>Email:</dt>           <dd>{{ booking['gmail'] }}</dd>
+                <dt>Phone:</dt>           <dd>{{ booking['phnum'] }}</dd>
+                <dt>Travel Date:</dt>     <dd>{{ booking['travel_date'] }}</dd>
+            </dl>
+
+            <div class="section">
+                <h2>Flight Details</h2>
+                <dl class="details-grid">
+                    <dt>Destination:</dt> <dd>{{ booking['flight_destination'] }}</dd>
+                    <dt>Class:</dt>       <dd>{{ booking['flight_class'] }}</dd>
+                    <dt>Seat:</dt>        <dd>{{ booking['flight_seat'] }}</dd>
+                    <dt>Fare:</dt>        <dd>₹{{ booking['flight_fare'] }}</dd>
+                </dl>
+            </div>
+            
+            <div class="section">
+                <h2>Train Details</h2>
+                <dl class="details-grid">
+                    <dt>Train:</dt>        <dd>{{ booking['train_name'] }} ({{ booking['train_number'] }})</dd>
+                    <dt>Destination:</dt>  <dd>{{ booking['train_destination'] }}</dd>
+                    <dt>Seat:</dt>         <dd>{{ booking['train_compartment'] }} - {{ booking['train_seat'] }}</dd>
+                    <dt>Fare:</dt>         <dd>₹{{ booking['train_fare'] }}</dd>
+                </dl>
+            </div>
+            <div class="total">Total Fare: ₹{{ booking['flight_fare'] + booking['train_fare'] }}</div>
+        {% endif %}
+
+        {% if booking['food_orders'] %}
+            <div class="section">
+                <h2>Additional Food Orders</h2>
+                <ul>
+                    {% for item in booking['food_orders'] %}
+                        <li>{{ item['food_item'] }} (Qty: {{ item['quantity'] }}) - ₹{{ item['food_cost'] }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+        
+        <div class="footer">
+            Please present this ticket at the time of travel.
+        </div>
+    </div>
+</body>
+</html>
