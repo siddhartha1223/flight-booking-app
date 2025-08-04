@@ -9,35 +9,53 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        /* General Body and Layout Styles */
         body {
             display: flex;
             flex-direction: column;
             min-height: 100vh;
             background-color: #f0f2f5;
-            background-image: url('images/background.jpg');
+            /* CORRECTED PATH using url_for */
+            background-image: url("{{ url_for('static', filename='images/background.jpg') }}");
             background-size: cover;
             background-position: center center;
             background-attachment: fixed;
             font-family: 'Roboto', sans-serif;
         }
+
         .main-container {
             flex: 1;
             padding-top: 2rem;
             padding-bottom: 2rem;
         }
+
         .footer {
             background-color: rgba(33, 37, 41, 0.9);
             color: white;
             padding: 1.5rem 0;
             flex-shrink: 0;
         }
+
+        /* Component Styles */
         .navbar {
-             background-color: rgba(33, 37, 41, 0.9) !important;
-             backdrop-filter: blur(10px);
+            background-color: rgba(33, 37, 41, 0.9) !important;
+            backdrop-filter: blur(10px);
         }
+
         .card, .alert, .list-group-item {
             backdrop-filter: blur(10px);
             background-color: rgba(255, 255, 255, 0.85) !important;
+        }
+
+        /* Hero Section Style */
+        .hero-section {
+            /* CORRECTED PATH using url_for */
+            background-image: url("{{ url_for('static', filename='images/combinedpass.png') }}");
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-size: cover;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
         }
     </style>
 </head>
