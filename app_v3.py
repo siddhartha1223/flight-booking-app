@@ -876,7 +876,7 @@ def get_train_options():
         logger.error(f"Error in get_train_options: {e}")
         return jsonify({}), 500
 
-@app.route('/payment_success', methods=['POST'])
+@app.route('/payment_success', methods=['GET', 'POST'])
 def payment_success():
     booking = session.get('booking')
     if not booking or not validate_ticket_id(booking['ticket_id']):
