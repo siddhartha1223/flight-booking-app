@@ -540,18 +540,21 @@ def payment_success():
 
 @app.route('/verify_booking/<ticket_id>', methods=['GET', 'POST'])
 def verify_booking(ticket_id):
-    if not validate_ticket_id(ticket_id): flash('Invalid ticket ID.', 'error'); return redirect(url_for('home'))
+    if not validate_ticket_id(ticket_id):
+        flash('Invalid ticket ID format.', 'error')
+        return redirect(url_for('home'))
+
     if request.method == 'POST':
         otp = request.form.get('otp', '').strip()
         valid, message = validate_otp(otp, ticket_id)
         if not valid:
             flash(message, 'error')
             return redirect(url_for('verify_booking', ticket_id=ticket_id))
-        
-        db = get_db()
-        cursor = db.cursor()
+
         try:
-            db.start_transaction()
+            db = get_db()
+            cursor = db.cursor()
+            
             table_to_update = None
             if ticket_id.startswith('FL'): table_to_update = 'customers'
             elif ticket_id.startswith('TR'): table_to_update = 'train_bookings'
@@ -561,17 +564,20 @@ def verify_booking(ticket_id):
                 query = f'UPDATE {table_to_update} SET status = %s WHERE ticketID = %s'
                 cursor.execute(query, ('confirmed', ticket_id))
                 cursor.execute('DELETE FROM verification_tokens WHERE ticket_id = %s', (ticket_id,))
-                db.commit()
+                db.commit() # Commit the changes
                 flash('Booking verified successfully!', 'success')
+                logger.info(f"Booking verified: ticket_id={ticket_id}")
                 return redirect(url_for('download_ticket', ticket_id=ticket_id))
             else:
-                flash('Booking not found.', 'error'); db.rollback()
+                flash('Booking not found.', 'error')
                 return redirect(url_for('home'))
         except mysql.connector.Error as e:
-            flash('Database error occurred.', 'error'); logger.error(f"DB error in verify_booking: {e}"); db.rollback()
+            flash('Database error occurred.', 'error')
+            logger.error(f"Database error in verify_booking: {e}")
             return redirect(url_for('home'))
         finally:
-            if 'cursor' in locals() and cursor: cursor.close()
+            if 'cursor' in locals() and cursor:
+                cursor.close()
             
     return render_template('verify_booking.html', ticket_id=ticket_id, recaptcha_site_key=RECAPTCHA_SITE_KEY)
 
