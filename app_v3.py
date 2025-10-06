@@ -931,7 +931,7 @@ def payment_success():
 
         # 4. Send verification email via SendGrid API
         message = Mail(
-            from_email='contact@your-verified-domain.com',  # IMPORTANT: Use the email you verified with SendGrid
+            from_email='travelbooking234@gmail.com',  # IMPORTANT: Use the email you verified with SendGrid
             to_emails=booking['email'],
             subject='Your Booking Verification OTP',
             html_content=f'<strong>Your booking is pending verification.</strong><br>Please use this OTP to complete your booking: <h1>{otp}</h1>'
