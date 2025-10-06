@@ -8,6 +8,8 @@ import smtplib
 from email.message import EmailMessage
 import re
 import os
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
 from datetime import datetime, timedelta
 import bcrypt
 from dotenv import load_dotenv
@@ -927,16 +929,18 @@ def payment_success():
         cursor.execute('INSERT INTO verification_tokens (ticket_id, otp, created_at) VALUES (%s, %s, %s)',
                        (ticket_id, otp, datetime.now()))
 
-        # 4. Send verification email
-        msg = EmailMessage()
-        msg.set_content(f'Your booking is pending verification. Use this OTP: {otp}')
-        msg['Subject'] = 'Booking Verification OTP'
-        msg['From'] = SMTP_EMAIL
-        msg['To'] = booking['email']
-        with smtplib.SMTP('smtp.gmail.com', 587) as smtp:
-            smtp.starttls()
-            smtp.login(SMTP_EMAIL, SMTP_PASSWORD)
-            smtp.send_message(msg)
+        # 4. Send verification email via SendGrid API
+        message = Mail(
+            from_email='contact@your-verified-domain.com',  # IMPORTANT: Use the email you verified with SendGrid
+            to_emails=booking['email'],
+            subject='Your Booking Verification OTP',
+            html_content=f'<strong>Your booking is pending verification.</strong><br>Please use this OTP to complete your booking: <h1>{otp}</h1>'
+        )
+        sendgrid_client = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+        response = sendgrid_client.send(message)
+
+        if response.status_code < 200 or response.status_code >= 300:
+            raise Exception(f"SendGrid email failed with status {response.status_code}: {response.body}")
             
         # 5. If all succeeds, commit the transaction
         conn.commit()
@@ -945,7 +949,7 @@ def payment_success():
         logger.info(f"Payment successful, verification pending: ticket_id={ticket_id}")
         return redirect(url_for('verify_booking', ticket_id=ticket_id))
 
-    except (mysql.connector.Error, smtplib.SMTPException) as e:
+    except Exception as e:
         logger.error(f"Error in payment_success for ticket {ticket_id}: {e}")
         if conn:
             conn.rollback()
